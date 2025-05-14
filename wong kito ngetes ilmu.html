@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Sejarah Palembang</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #cce7ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 10px 0;
+        }
+        header img {
+            width: 100px;
+            height: auto;
+        }
+        h2 {
+            margin: 20px 0;
+        }
+        .question {
+            margin: 20px 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+        .question p {
+            font-weight: bold;
+        }
+        .question input {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #005599;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .feedback {
+            text-align: left;
+            margin: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="logo2.png" alt="Logo SMA Xaverius 3 Palembang">
+    <h1>SMA Xaverius 3 Palembang</h1>
+</header>
+
+<h2>Kuis Sejarah Palembang</h2>
+
+<form id="quizForm">
+    <div class="question">
+        <p>1. Apa nama kerajaan besar yang pernah berdiri di Palembang?</p>
+        <input type="radio" name="q1" value="a"> Kerajaan Majapahit<br>
+        <input type="radio" name="q1" value="b"> Kerajaan Sriwijaya<br>
+        <input type="radio" name="q1" value="c"> Kerajaan Mataram<br>
+    </div>
+
+    <div class="question">
+        <p>2. Pada abad berapa Kerajaan Sriwijaya mencapai puncak kejayaannya?</p>
+        <input type="radio" name="q2" value="a"> Abad ke-10<br>
+        <input type="radio" name="q2" value="b"> Abad ke-7<br>
+        <input type="radio" name="q2" value="c"> Abad ke-13<br>
+    </div>
+
+    <div class="question">
+        <p>3. Siapa tokoh penting dalam perjuangan melawan Belanda di Palembang pada abad ke-19?</p>
+        <input type="radio" name="q3" value="a"> Sultan Mahmud Badaruddin II<br>
+        <input type="radio" name="q3" value="b"> Sultan Agung<br>
+        <input type="radio" name="q3" value="c"> Tuanku Imam Bonjol<br>
+    </div>
+
+    <div class="question">
+        <p>4. Palembang pernah menjadi tuan rumah ajang olahraga besar, yaitu:</p>
+        <input type="radio" name="q4" value="a"> SEA Games 2011<br>
+        <input type="radio" name="q4" value="b"> Asian Games 2002<br>
+        <input type="radio" name="q4" value="c"> PON 2000<br>
+    </div>
+
+    <div class="question">
+        <p>5. Sungai besar yang menjadi urat nadi kehidupan Palembang adalah:</p>
+        <input type="radio" name="q5" value="a"> Sungai Musi<br>
+        <input type="radio" name="q5" value="b"> Sungai Kapuas<br>
+        <input type="radio" name="q5" value="c"> Sungai Mahakam<br>
+    </div>
+
+    <button type="button" onclick="checkAnswers()">Kirim Jawaban</button>
+</form>
+
+<div class="result" id="result"></div>
+<div class="feedback" id="feedback"></div>
+
+<script>
+function checkAnswers() {
+    const answers = {
+        q1: "b",
+        q2: "a",
+        q3: "a",
+        q4: "a",
+        q5: "a"
+    };
+
+    const explanations = {
+        q1: "Kerajaan Sriwijaya adalah kerajaan besar yang pernah berdiri di Palembang dan menjadi pusat perdagangan maritim serta agama Buddha.",
+        q2: "Kerajaan Sriwijaya mencapai puncak kejayaannya pada abad ke-10, dikenal luas di kawasan Asia Tenggara.",
+        q3: "Sultan Mahmud Badaruddin II adalah tokoh penting dalam perjuangan melawan penjajahan Belanda di Palembang.",
+        q4: "Palembang menjadi tuan rumah SEA Games 2011 bersama Jakarta, membuktikan kapasitasnya dalam ajang internasional.",
+        q5: "Sungai Musi adalah sungai utama yang menjadi urat nadi kehidupan dan perdagangan di Palembang."
+    };
+
+    let score = 0;
+    let feedback = "";
+
+    for (let key in answers) {
+        const selected = document.querySelector(`input[name="${key}"]:checked`);
+        if (selected) {
+            if (selected.value === answers[key]) {
+                score++;
+                feedback += `<p class="correct">Soal ${key.substring(1)}: Benar! ${explanations[key]}</p>`;
+            } else {
+                feedback += `<p class="incorrect">Soal ${key.substring(1)}: Salah. ${explanations[key]}</p>`;
+            }
+        } else {
+            feedback += `<p class="incorrect">Soal ${key.substring(1)}: Belum dijawab. ${explanations[key]}</p>`;
+        }
+    }
+
+    document.getElementById("result").innerHTML = `<p>Skor Anda: ${score} dari 5</p>`;
+    document.getElementById("feedback").innerHTML = feedback;
+}
+</script>
+
+</body>
+</html>

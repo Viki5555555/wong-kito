@@ -206,3 +206,56 @@ function loadQuestions() {
     document.getElementById("result").innerHTML = "";
     document.getElementById("feedback").innerHTML = "";
 
+    quizData[level].forEach((item, index) => {
+        const questionHTML = `
+            <div class="question">
+                <p>${index + 1}. ${item.question}</p>
+                ${item.options.map(opt => `
+                    <label>
+                        <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                    </label><br>
+                `).join("")}
+            </div>
+        `;
+        quizForm.innerHTML += questionHTML;
+    });
+}
+
+function checkAnswers() {
+    const level = document.getElementById("difficulty").value;
+    const questions = quizData[level];
+    let score = 0;
+    let feedback = "";
+
+    questions.forEach((item, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selected) {
+            if (selected.value === item.answer) {
+                score++;
+                feedback += `<p class="correct">Soal ${index + 1}: Benar! ${item.explanation}</p>`;
+            } else {
+                feedback += `<p class="incorrect">Soal ${index + 1}: Salah. ${item.explanation}</p>`;
+            }
+        } else {
+            feedback += `<p class="incorrect">Soal ${index + 1}: Belum dijawab. ${item.explanation}</p>`;
+        }
+    });
+
+    const total = questions.length;
+    let message = `<p>Skor Anda: ${score} dari ${total}</p>`;
+
+    if (score === total) {
+        message += "<p><strong>Luar biasa! Anda menguasai materi dengan sangat baik! 🌟</strong></p>";
+    } else if (score >= total / 2) {
+        message += "<p><strong>Bagus! Tetap semangat dan terus belajar!</strong></p>";
+    } else {
+        message += "<p><strong>Jangan menyerah! Terus belajar, Anda pasti bisa! 💪</strong></p>";
+    }
+
+    document.getElementById("result").innerHTML = message;
+    document.getElementById("feedback").innerHTML = feedback;
+}
+</script>
+
+</body>
+</html>

@@ -22,13 +22,21 @@
             width: 100px;
             height: auto;
         }
-        h2 {
+        h2, h3 {
             margin: 20px 0;
         }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
         .question {
-            margin: 20px 0;
+            margin: 20px auto;
             text-align: left;
-            padding-left: 20px;
+            padding: 10px 20px;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 8px;
         }
         .question p {
             font-weight: bold;
@@ -43,27 +51,25 @@
             padding: 10px 20px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 20px;
         }
         button:hover {
             background-color: #005599;
         }
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .feedback {
+        .result, .feedback {
+            margin: 20px auto;
+            max-width: 700px;
             text-align: left;
-            margin: 20px;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 5px;
+            font-size: 16px;
         }
         .correct {
             color: green;
         }
         .incorrect {
             color: red;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -75,88 +81,128 @@
 </header>
 
 <h2>Kuis Sejarah Palembang</h2>
+<h3>Pilih Tingkat Kesulitan:</h3>
+<select id="difficulty" onchange="loadQuestions()">
+    <option value="easy">Mudah</option>
+    <option value="medium">Sedang</option>
+    <option value="hard">Sulit</option>
+</select>
 
-<form id="quizForm">
-    <div class="question">
-        <p>1. Apa nama kerajaan besar yang pernah berdiri di Palembang?</p>
-        <input type="radio" name="q1" value="a"> Kerajaan Majapahit<br>
-        <input type="radio" name="q1" value="b"> Kerajaan Sriwijaya<br>
-        <input type="radio" name="q1" value="c"> Kerajaan Mataram<br>
-    </div>
+<form id="quizForm" class="hidden"></form>
 
-    <div class="question">
-        <p>2. Pada abad berapa Kerajaan Sriwijaya mencapai puncak kejayaannya?</p>
-        <input type="radio" name="q2" value="a"> Abad ke-10<br>
-        <input type="radio" name="q2" value="b"> Abad ke-7<br>
-        <input type="radio" name="q2" value="c"> Abad ke-13<br>
-    </div>
+<button id="submitBtn" class="hidden" onclick="checkAnswers()">Kirim Jawaban</button>
 
-    <div class="question">
-        <p>3. Siapa tokoh penting dalam perjuangan melawan Belanda di Palembang pada abad ke-19?</p>
-        <input type="radio" name="q3" value="a"> Sultan Mahmud Badaruddin II<br>
-        <input type="radio" name="q3" value="b"> Sultan Agung<br>
-        <input type="radio" name="q3" value="c"> Tuanku Imam Bonjol<br>
-    </div>
-
-    <div class="question">
-        <p>4. Palembang pernah menjadi tuan rumah ajang olahraga besar, yaitu:</p>
-        <input type="radio" name="q4" value="a"> SEA Games 2011<br>
-        <input type="radio" name="q4" value="b"> Asian Games 2002<br>
-        <input type="radio" name="q4" value="c"> PON 2000<br>
-    </div>
-
-    <div class="question">
-        <p>5. Sungai besar yang menjadi urat nadi kehidupan Palembang adalah:</p>
-        <input type="radio" name="q5" value="a"> Sungai Musi<br>
-        <input type="radio" name="q5" value="b"> Sungai Kapuas<br>
-        <input type="radio" name="q5" value="c"> Sungai Mahakam<br>
-    </div>
-
-    <button type="button" onclick="checkAnswers()">Kirim Jawaban</button>
-</form>
-
-<div class="result" id="result"></div>
-<div class="feedback" id="feedback"></div>
+<div id="result" class="result"></div>
+<div id="feedback" class="feedback"></div>
 
 <script>
-function checkAnswers() {
-    const answers = {
-        q1: "b",
-        q2: "a",
-        q3: "a",
-        q4: "a",
-        q5: "a"
-    };
-
-    const explanations = {
-        q1: "Kerajaan Sriwijaya adalah kerajaan besar yang pernah berdiri di Palembang dan menjadi pusat perdagangan maritim serta agama Buddha.",
-        q2: "Kerajaan Sriwijaya mencapai puncak kejayaannya pada abad ke-10, dikenal luas di kawasan Asia Tenggara.",
-        q3: "Sultan Mahmud Badaruddin II adalah tokoh penting dalam perjuangan melawan penjajahan Belanda di Palembang.",
-        q4: "Palembang menjadi tuan rumah SEA Games 2011 bersama Jakarta, membuktikan kapasitasnya dalam ajang internasional.",
-        q5: "Sungai Musi adalah sungai utama yang menjadi urat nadi kehidupan dan perdagangan di Palembang."
-    };
-
-    let score = 0;
-    let feedback = "";
-
-    for (let key in answers) {
-        const selected = document.querySelector(`input[name="${key}"]:checked`);
-        if (selected) {
-            if (selected.value === answers[key]) {
-                score++;
-                feedback += `<p class="correct">Soal ${key.substring(1)}: Benar! ${explanations[key]}</p>`;
-            } else {
-                feedback += `<p class="incorrect">Soal ${key.substring(1)}: Salah. ${explanations[key]}</p>`;
-            }
-        } else {
-            feedback += `<p class="incorrect">Soal ${key.substring(1)}: Belum dijawab. ${explanations[key]}</p>`;
+const quizData = {
+    easy: [
+        {
+            question: "Apa nama kerajaan besar yang pernah berdiri di Palembang?",
+            options: ["Kerajaan Majapahit", "Kerajaan Sriwijaya", "Kerajaan Mataram"],
+            answer: "Kerajaan Sriwijaya",
+            explanation: "Kerajaan Sriwijaya adalah kerajaan besar yang pernah berdiri di Palembang dan menjadi pusat perdagangan maritim serta agama Buddha."
+        },
+        {
+            question: "Sungai utama yang menjadi urat nadi kehidupan di Palembang adalah?",
+            options: ["Sungai Mahakam", "Sungai Musi", "Sungai Kapuas"],
+            answer: "Sungai Musi",
+            explanation: "Sungai Musi adalah sungai utama yang menjadi urat nadi kehidupan dan perdagangan di Palembang."
+        },
+        {
+            question: "Palembang adalah ibu kota provinsi?",
+            options: ["Bengkulu", "Sumatera Selatan", "Lampung"],
+            answer: "Sumatera Selatan",
+            explanation: "Palembang adalah ibu kota dari provinsi Sumatera Selatan."
+        },
+        {
+            question: "SEA Games 2011 diselenggarakan di Palembang dan?",
+            options: ["Bandung", "Surabaya", "Jakarta"],
+            answer: "Jakarta",
+            explanation: "SEA Games 2011 diselenggarakan di dua kota yaitu Jakarta dan Palembang."
+        },
+        {
+            question: "Jembatan terkenal di Palembang adalah?",
+            options: ["Jembatan Ampera", "Jembatan Suramadu", "Jembatan Barito"],
+            answer: "Jembatan Ampera",
+            explanation: "Jembatan Ampera adalah ikon kota Palembang yang melintasi Sungai Musi."
         }
-    }
+    ],
+    medium: [
+        {
+            question: "Kerajaan Sriwijaya mencapai puncak kejayaannya pada abad ke?",
+            options: ["Abad ke-7", "Abad ke-10", "Abad ke-13"],
+            answer: "Abad ke-10",
+            explanation: "Kerajaan Sriwijaya mencapai puncak kejayaannya pada abad ke-10, dikenal luas di kawasan Asia Tenggara."
+        },
+        {
+            question: "Sultan Mahmud Badaruddin II dikenal karena?",
+            options: ["Menjadi gubernur pertama", "Memimpin perlawanan terhadap Belanda", "Mendirikan Kerajaan Sriwijaya"],
+            answer: "Memimpin perlawanan terhadap Belanda",
+            explanation: "Sultan Mahmud Badaruddin II adalah tokoh penting dalam perjuangan melawan penjajahan Belanda di Palembang."
+        },
+        {
+            question: "Palembang memiliki museum sejarah bernama?",
+            options: ["Museum Sriwijaya", "Museum Nasional", "Museum Sumpah Pemuda"],
+            answer: "Museum Sriwijaya",
+            explanation: "Museum Sriwijaya berisi peninggalan sejarah masa kejayaan Kerajaan Sriwijaya di Palembang."
+        },
+        {
+            question: "Palembang berperan penting dalam penyebaran agama?",
+            options: ["Hindu", "Islam", "Budha"],
+            answer: "Budha",
+            explanation: "Sebagai pusat Kerajaan Sriwijaya, Palembang berperan penting dalam penyebaran agama Budha di Asia Tenggara."
+        },
+        {
+            question: "Tokoh nasional asal Palembang yang jadi nama bandara adalah?",
+            options: ["Soekarno", "Sultan Mahmud Badaruddin II", "Ki Hajar Dewantara"],
+            answer: "Sultan Mahmud Badaruddin II",
+            explanation: "Bandara di Palembang dinamakan Bandara Sultan Mahmud Badaruddin II."
+        }
+    ],
+    hard: [
+        {
+            question: "Apa penyebab utama melemahnya Kerajaan Sriwijaya?",
+            options: ["Serangan dari Kerajaan Majapahit", "Invasi dari Chola (India Selatan)", "Perang saudara"],
+            answer: "Invasi dari Chola (India Selatan)",
+            explanation: "Kerajaan Sriwijaya mengalami kemunduran akibat invasi dari Kerajaan Chola dari India Selatan."
+        },
+        {
+            question: "Apa nama prasasti peninggalan Sriwijaya yang ditemukan di Palembang?",
+            options: ["Prasasti Kedukan Bukit", "Prasasti Ciaruteun", "Prasasti Kalasan"],
+            answer: "Prasasti Kedukan Bukit",
+            explanation: "Prasasti Kedukan Bukit ditemukan di Palembang dan menjadi bukti keberadaan Kerajaan Sriwijaya."
+        },
+        {
+            question: "Kerajaan Sriwijaya dikenal memiliki armada laut yang kuat untuk?",
+            options: ["Perdagangan dan pertanian", "Perang dan ekspansi", "Perdagangan dan kontrol maritim"],
+            answer: "Perdagangan dan kontrol maritim",
+            explanation: "Sriwijaya memiliki armada laut kuat untuk menguasai jalur perdagangan maritim."
+        },
+        {
+            question: "Siapa pelaut Tiongkok yang pernah mengunjungi Palembang pada abad ke-15?",
+            options: ["Zheng He", "Marco Polo", "Ibnu Battuta"],
+            answer: "Zheng He",
+            explanation: "Laksamana Zheng He dari Tiongkok mengunjungi Palembang dalam ekspedisi maritimnya."
+        },
+        {
+            question: "Wilayah kekuasaan Sriwijaya meluas sampai ke?",
+            options: ["Jawa Tengah", "Thailand dan Kamboja", "Kalimantan Timur"],
+            answer: "Thailand dan Kamboja",
+            explanation: "Pengaruh Sriwijaya mencapai wilayah Thailand dan Kamboja sebagai kerajaan maritim besar."
+        }
+    ]
+};
 
-    document.getElementById("result").innerHTML = `<p>Skor Anda: ${score} dari 5</p>`;
-    document.getElementById("feedback").innerHTML = feedback;
-}
-</script>
+function loadQuestions() {
+    const level = document.getElementById("difficulty").value;
+    const quizForm = document.getElementById("quizForm");
+    const submitBtn = document.getElementById("submitBtn");
 
-</body>
-</html>
+    quizForm.innerHTML = "";
+    quizForm.classList.remove("hidden");
+    submitBtn.classList.remove("hidden");
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
+
